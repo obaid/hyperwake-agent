@@ -185,8 +185,32 @@ input:focus, textarea:focus { outline: none; border-color: var(--green); }
   margin: 0.4rem 0;
 }
 .tool.failed { border-left-color: var(--red); }
-.tool-head { display: flex; align-items: center; gap: 0.7rem; }
+.tool.asking { border-left-color: var(--amber); }
+.tool.asking .tool-head code { color: var(--amber); }
+.tool-head {
+  display: flex; align-items: center; gap: 0.7rem; width: 100%;
+  background: transparent; border: 0; padding: 0; color: inherit; text-align: left;
+}
 .tool-head code { color: var(--amber); }
+.tool-head .muted {
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0;
+}
+
+.badge {
+  display: inline-block; margin-top: 0.45rem;
+  font-size: 0.85em; padding: 0.05rem 0.45rem;
+  border: 1px solid var(--line); border-radius: 999px; color: var(--muted);
+}
+.badge.live { color: var(--green); border-color: color-mix(in srgb, var(--green) 40%, var(--line)); }
+.badge.done { color: var(--muted); }
+.badge.bad { color: var(--red); border-color: color-mix(in srgb, var(--red) 40%, var(--line)); }
+
+/* What the agent saw. Shown at the size it was sent, so what you check is what
+   it looked at rather than a prettier version. */
+.shot {
+  display: block; margin-top: 0.5rem; max-width: 100%;
+  border: 1px solid var(--line); border-radius: 4px;
+}
 .tool pre {
   margin: 0.5rem 0 0; padding: 0.5rem 0.6rem;
   background: var(--ground); border-radius: 4px;
