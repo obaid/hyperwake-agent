@@ -18,10 +18,24 @@ export type ModelMedia = {
   value: Array<{ type: 'media'; data: string; mediaType: string }>;
 };
 
-export function asModelMedia(output: Shot): ModelMedia {
-  if (!output?.data) throw new Error('A screenshot with no data cannot be shown to the model.');
+/**
+ * Conversations saved before this conversion existed hold the shape the tool
+ * used to return, `{ content: [{ type: 'media', ... }] }`. Reopening one of
+ * those must not throw, so both shapes are accepted. New runs only ever produce
+ * the first.
+ */
+function shotFrom(output: unknown): Shot | null {
+  const value = output as any;
+  if (value?.data) return { data: value.data, mediaType: value.mediaType };
+  const legacy = value?.content?.find?.((part: any) => part?.type === 'media');
+  return legacy?.data ? { data: legacy.data, mediaType: legacy.mediaType } : null;
+}
+
+export function asModelMedia(output: Shot | unknown): ModelMedia {
+  const shot = shotFrom(output);
+  if (!shot) throw new Error('A screenshot with no data cannot be shown to the model.');
   return {
     type: 'content',
-    value: [{ type: 'media', data: output.data, mediaType: output.mediaType || 'image/png' }],
+    value: [{ type: 'media', data: shot.data, mediaType: shot.mediaType || 'image/png' }],
   };
 }

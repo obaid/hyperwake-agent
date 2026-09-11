@@ -30,3 +30,16 @@ test('a missing media type still produces a usable image', () => {
 test('an empty screenshot is refused rather than sent as an empty image', () => {
   assert.throws(() => asModelMedia({ mediaType: 'image/png', data: '' }), /no data/);
 });
+
+test('a screenshot saved by an older version still opens', () => {
+  // What conversations on disk from before 0.4.0 actually contain.
+  const legacy = { content: [{ type: 'media', mediaType: 'image/png', data: 'OLD' }] };
+  const out = asModelMedia(legacy);
+  assert.equal(out.type, 'content');
+  assert.deepEqual(out.value, [{ type: 'media', data: 'OLD', mediaType: 'image/png' }]);
+});
+
+test('something that is neither shape is still refused', () => {
+  assert.throws(() => asModelMedia({ exit_code: 0 }), /no data/);
+  assert.throws(() => asModelMedia(null), /no data/);
+});
