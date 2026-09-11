@@ -6,6 +6,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import DesktopPanel from './DesktopPanel';
 import ToolCard from './ToolCard';
 import Threads, { type ThreadSummary } from './Threads';
+import Machines from './Machines';
 
 type Machine = { id: string; name: string; status: string; threadId: string | null };
 
@@ -16,6 +17,7 @@ export default function Chat({ model, provider }: { model: string; provider: str
   const [initial, setInitial] = useState<any[]>([]);
   const [input, setInput] = useState('');
   const [showDesktop, setShowDesktop] = useState(false);
+  const [showMachines, setShowMachines] = useState(false);
   const bottom = useRef<HTMLDivElement>(null);
 
   // The thread id has to reach the server with every message, and changing
@@ -103,12 +105,21 @@ export default function Chat({ model, provider }: { model: string; provider: str
         threads={threads}
         current={threadId}
         machines={machines}
-        onSelect={select}
-        onNew={newThread}
+        onSelect={(id) => { setShowMachines(false); select(id); }}
+        onNew={() => { setShowMachines(false); newThread(); }}
         onDelete={removeThread}
+        onShowMachines={() => setShowMachines((s) => !s)}
+        showingMachines={showMachines}
       />
 
-      <main className="conversation">
+      {showMachines && (
+        <Machines
+          onClose={() => setShowMachines(false)}
+          onOpenThread={(id) => { setShowMachines(false); select(id); }}
+        />
+      )}
+
+      {!showMachines && <main className="conversation">
         <header className="bar">
           <strong>{thread?.title ?? 'New conversation'}</strong>
           <span className="muted small">{provider} · {model}</span>
@@ -172,9 +183,9 @@ export default function Chat({ model, provider }: { model: string; provider: str
             ? <button type="button" className="stop" onClick={stop}>Stop</button>
             : <button type="submit" disabled={!input.trim()}>Send</button>}
         </form>
-      </main>
+      </main>}
 
-      {showDesktop && threadId && (
+      {showDesktop && threadId && !showMachines && (
         <DesktopPanel threadId={threadId} onClose={() => setShowDesktop(false)} />
       )}
     </div>

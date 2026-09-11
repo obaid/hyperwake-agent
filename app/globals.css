@@ -163,8 +163,41 @@ input:focus, textarea:focus { outline: none; border-color: var(--green); }
 .threads .confirm { padding: 0.4rem 0.6rem 0.6rem; display: grid; gap: 0.35rem; }
 .threads .confirm p { margin: 0; color: var(--amber); }
 .threads button.small { padding: 0.25rem 0.5rem; font-size: 0.85em; }
-.orphans { border-top: 1px solid var(--line); padding: 0.7rem 0.8rem; }
-.orphans p { margin: 0; }
+.machines-link { border-top: 1px solid var(--line); padding: 0.5rem 0.6rem; }
+.machines-link button {
+  width: 100%; display: flex; justify-content: space-between; align-items: center;
+  border-color: transparent; color: var(--muted);
+}
+.machines-link button:hover { color: var(--cream); border-color: var(--line); }
+.machines-link button.on { color: var(--green); border-color: var(--line); }
+.machines-link em { font-style: normal; color: var(--green); font-size: 0.85em; }
+.machines-link p { margin: 0.35rem 0 0; padding: 0 0.3rem; }
+
+/* --- machines --------------------------------------------------------------- */
+
+.machine {
+  border: 1px solid var(--line);
+  border-left: 2px solid var(--muted);
+  background: var(--raised);
+  border-radius: var(--radius);
+  padding: 0.7rem 0.9rem;
+  max-width: 46rem;
+}
+.machine.live { border-left-color: var(--green); }
+.machine .who { display: flex; align-items: center; gap: 0.6rem; }
+.machine .spec { margin: 0.35rem 0 0; }
+.machine .owner { margin: 0.15rem 0 0; }
+.machine .actions {
+  display: flex; align-items: center; gap: 0.5rem; margin-top: 0.7rem;
+}
+.machine .actions button { padding: 0.25rem 0.7rem; font-size: 0.9em; }
+.machine .actions .muted { margin-right: auto; }
+button.danger { color: var(--red); }
+button.danger:hover:not(:disabled) { border-color: var(--red); }
+button.link {
+  background: none; border: 0; padding: 0; color: var(--green);
+  text-decoration: underline; cursor: pointer; font-size: inherit;
+}
 
 @media (max-width: 720px) {
   .shell, .shell.split { grid-template-columns: 1fr; }

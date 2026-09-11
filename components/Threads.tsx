@@ -26,6 +26,8 @@ export default function Threads({
   onNew,
   onDelete,
   machines,
+  onShowMachines,
+  showingMachines,
 }: {
   threads: ThreadSummary[];
   current: string | null;
@@ -33,6 +35,8 @@ export default function Threads({
   onNew: () => void;
   onDelete: (id: string, alsoMachine: boolean) => void;
   machines: { id: string; status: string; threadId: string | null }[];
+  onShowMachines: () => void;
+  showingMachines: boolean;
 }) {
   const [confirming, setConfirming] = useState<string | null>(null);
   const running = new Map(machines.map((m) => [m.id, m.status]));
@@ -98,14 +102,17 @@ export default function Threads({
         })}
       </ul>
 
-      {orphans.length > 0 && (
-        <footer className="orphans">
+      <footer className="machines-link">
+        <button className={showingMachines ? 'ghost on' : 'ghost'} onClick={onShowMachines}>
+          Machines
+          {machines.length > 0 && <em>{machines.filter((m) => m.status === 'ready').length} up</em>}
+        </button>
+        {orphans.length > 0 && (
           <p className="small muted">
-            {orphans.length} machine{orphans.length === 1 ? '' : 's'} running that no conversation
-            here owns. Created by hand or through MCP; left alone on purpose.
+            {orphans.length} not from this app
           </p>
-        </footer>
-      )}
+        )}
+      </footer>
     </nav>
   );
 }
