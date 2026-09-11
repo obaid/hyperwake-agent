@@ -42,12 +42,19 @@ export default function Threads({
 
   return (
     <nav className="threads">
-      <header className="bar">
-        <strong>Conversations</strong>
-        <button className="ghost" onClick={onNew}>New</button>
+      <header className="brand">
+        <a href="https://hyperwake.ai" target="_blank" rel="noreferrer" title="hyperwake.ai">
+          hyperwake<span className="dot">.</span>
+        </a>
+        <span className="kind">agent</span>
       </header>
 
       <ul>
+        <li className="heading">
+          <span>Conversations</span>
+          <button className="ghost small" onClick={onNew}>New</button>
+        </li>
+
         {threads.length === 0 && <li className="muted pad small">Nothing yet.</li>}
 
         {threads.map((thread) => {
