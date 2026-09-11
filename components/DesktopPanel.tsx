@@ -10,17 +10,21 @@ import { useCallback, useEffect, useState } from 'react';
  * is single use and lives sixty seconds, so it is minted when this panel opens
  * and again whenever the viewer needs to reconnect.
  */
-export default function DesktopPanel({ onClose }: { onClose: () => void }) {
+export default function DesktopPanel({ threadId, onClose }: { threadId: string; onClose: () => void }) {
   const [url, setUrl] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   const mint = useCallback(async () => {
     setError(null);
-    const response = await fetch('/api/desktop', { method: 'POST' });
+    const response = await fetch('/api/desktop', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ threadId }),
+    });
     const body = await response.json();
     if (!response.ok) { setError(body.error); return; }
     setUrl(body.url);
-  }, []);
+  }, [threadId]);
 
   useEffect(() => { mint(); }, [mint]);
 

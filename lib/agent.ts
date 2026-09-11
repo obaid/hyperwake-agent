@@ -2,15 +2,15 @@ import { ToolLoopAgent, stepCountIs } from 'ai';
 import { readConfig } from './config';
 import { modelFor } from './providers';
 import { buildTools, type Session, SENT } from './tools';
+import { readThread, update } from './threads';
 
 /**
- * The agent.
+ * The agent, scoped to one conversation.
  *
- * One conversation, one machine, in memory. M1 has no persistence on purpose:
- * threads and resumable runs are M2, and building them before the agent works
- * would be designing storage for messages nobody has produced yet.
+ * Each thread owns its own machine. A single shared session would mean two
+ * conversations silently operating the same computer, which is the kind of bug
+ * that looks like the model going mad.
  */
-export const session: Session = { machineId: null };
 
 const INSTRUCTIONS = `You control a real Linux computer: Arch Linux running the Hyprland desktop, in a virtual machine on the user's own hardware. It is disposable. Nothing on it matters except what you put there, and the user can throw it away and make another in about a second.
 
@@ -24,7 +24,21 @@ How to work on it:
 
 If something fails, read the actual error and say what it was. A wrong answer delivered confidently is worse than "this failed, here is the output".`;
 
-export function buildAgent() {
+/** Build a session bound to a thread, persisting the machine it acquires. */
+export function sessionFor(threadId: string): Session {
+  const thread = readThread(threadId);
+  return {
+    machineId: thread?.machineId ?? null,
+    onMachine: (id) => {
+      update(threadId, { machineId: id, machineTouchedAt: new Date().toISOString() });
+    },
+    onActivity: () => {
+      update(threadId, { machineTouchedAt: new Date().toISOString() });
+    },
+  };
+}
+
+export function buildAgent(session: Session) {
   const config = readConfig();
   if (!config.provider || !config.apiKey || !config.model) {
     throw new Error('Not configured yet.');

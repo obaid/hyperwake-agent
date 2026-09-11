@@ -133,3 +133,6 @@ export async function waitForReady(id: string, timeoutMs = 120_000) {
   }
   throw new EngineError(504, `The machine was still "${status}" after ${timeoutMs / 1000}s.`);
 }
+
+export const startMachine = (id: string) => call('POST', `/v1/machines/${encodeURIComponent(id)}/start`);
+export const stopMachine = (id: string) => call('POST', `/v1/machines/${encodeURIComponent(id)}/stop`);

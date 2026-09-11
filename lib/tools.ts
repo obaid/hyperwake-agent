@@ -1,6 +1,6 @@
 import { tool } from 'ai';
 import { z } from 'zod';
-import { act, createMachine, deleteMachine, desktopUrl, getMachine, listMachines, waitForReady } from './engine';
+import { act, createMachine, deleteMachine, desktopUrl, getMachine, listMachines, startMachine, waitForReady } from './engine';
 
 /**
  * The tools the agent uses, and the state they share.
@@ -13,6 +13,8 @@ export type Session = {
   machineId: string | null;
   /** Pushed to the UI so the desktop panel can open itself at the right moment. */
   onMachine?: (id: string) => void;
+  /** Called whenever the machine is used, so the idle reaper knows it is alive. */
+  onActivity?: () => void;
 };
 
 /** The guest's real screen. Coordinates from the model are scaled back to this. */
@@ -32,7 +34,19 @@ const scaleUp = (value: number, axis: 'width' | 'height') =>
   Math.round(value * (SCREEN[axis] / SENT[axis]));
 
 async function ensureMachine(session: Session) {
-  if (session.machineId) return session.machineId;
+  session.onActivity?.();
+  if (session.machineId) {
+    // A thread resumed after the idle reaper stopped its machine should just
+    // work, at the cost of the same boot wait as the first time.
+    const machine = await getMachine(session.machineId).catch(() => null);
+    if (!machine) {
+      session.machineId = null;
+    } else if (machine.status === 'stopped') {
+      await startMachine(session.machineId);
+      await waitForReady(session.machineId);
+    }
+    if (session.machineId) return session.machineId;
+  }
   const machine = await createMachine({ name: 'agent' });
   const ready = await waitForReady(machine.id);
   session.machineId = ready.id;

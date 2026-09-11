@@ -106,8 +106,44 @@ input:focus, textarea:focus { outline: none; border-color: var(--green); }
 
 /* --- chat ----------------------------------------------------------------- */
 
-.shell { display: grid; grid-template-columns: 1fr; height: 100vh; }
-.shell.split { grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr); }
+.shell { display: grid; grid-template-columns: 15rem minmax(0, 1fr); height: 100vh; }
+.shell.split { grid-template-columns: 15rem minmax(0, 1fr) minmax(0, 1.1fr); }
+
+/* --- conversations -------------------------------------------------------- */
+
+.threads {
+  display: grid; grid-template-rows: auto minmax(0, 1fr) auto;
+  border-right: 1px solid var(--line); background: var(--sunk); min-width: 0;
+}
+.threads > ul { list-style: none; margin: 0; padding: 0.4rem; overflow-y: auto; }
+.threads li { position: relative; border-radius: var(--radius); }
+.threads li.on { background: var(--raised); }
+.threads li:hover .x { opacity: 1; }
+.threads .row {
+  display: grid; gap: 0.1rem; width: 100%; text-align: left;
+  background: transparent; border: 0; color: var(--cream);
+  padding: 0.45rem 1.6rem 0.45rem 0.6rem;
+}
+.threads .title { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.threads .meta { display: flex; gap: 0.5rem; }
+.threads em { font-style: normal; }
+.threads .live { color: var(--green); }
+.threads .dozing { color: var(--muted); }
+.threads .x {
+  position: absolute; top: 0.35rem; right: 0.3rem;
+  opacity: 0; padding: 0 0.35rem; border: 0; background: transparent; color: var(--muted);
+}
+.threads .x:hover { color: var(--red); }
+.threads .confirm { padding: 0.4rem 0.6rem 0.6rem; display: grid; gap: 0.35rem; }
+.threads .confirm p { margin: 0; color: var(--amber); }
+.threads button.small { padding: 0.25rem 0.5rem; font-size: 0.85em; }
+.orphans { border-top: 1px solid var(--line); padding: 0.7rem 0.8rem; }
+.orphans p { margin: 0; }
+
+@media (max-width: 720px) {
+  .shell, .shell.split { grid-template-columns: 1fr; }
+  .threads { display: none; }
+}
 
 .conversation { display: grid; grid-template-rows: auto minmax(0, 1fr) auto; min-width: 0; }
 

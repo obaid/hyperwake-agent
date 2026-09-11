@@ -13,8 +13,9 @@ npx hyperwake-agent    # this
 
 It opens a browser. Pick a model provider, then talk to it.
 
-> **Status: M1.** Setup, the agent, the tools and the desktop panel are built.
-> Threads and persistence are next. See
+> **Status: M2.** Setup, the agent, its tools, the desktop panel, conversations
+> that persist, and machines that stop themselves when idle. Taking the mouse
+> back from the agent mid-task is next. See
 > [ADR-AGENT-001](https://github.com/obaid/hyperwake-core/blob/main/docs/decisions/ADR-AGENT-001-hyperwake-agent.md)
 > for the design.
 
