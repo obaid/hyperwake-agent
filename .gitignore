@@ -4,3 +4,4 @@ server/
 next-env.d.ts
 *.tgz
 .DS_Store
+tsconfig.tsbuildinfo
