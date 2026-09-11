@@ -44,5 +44,19 @@ export async function POST(request: Request) {
     agent,
     uiMessages: messages,
     onFinish: ({ messages: done }: any) => { update(thread.id, { messages: done }); },
+
+    /**
+     * Say what actually went wrong.
+     *
+     * The SDK masks tool errors as "An error occurred." by default, which is
+     * the right call when a stranger is reading them. Here the only reader is
+     * the person who started the engine on their own laptop, and the masked
+     * message turns a diagnosable failure into a dead end.
+     */
+    onError: (error: unknown) => {
+      const message = error instanceof Error ? error.message : String(error);
+      process.stderr.write(`chat error: ${message}\n`);
+      return message || 'The run failed without saying why.';
+    },
   });
 }

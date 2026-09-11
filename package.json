@@ -1,6 +1,6 @@
 {
   "name": "hyperwake-agent",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "type": "module",
   "description": "A local chat app whose agent drives a throwaway Omarchy computer.",
   "homepage": "https://hyperwake.ai",
@@ -29,7 +29,7 @@
     "build": "next build",
     "bundle": "node scripts/bundle.js",
     "start": "node bin/hyperwake-agent.js",
-    "test": "node --test test/*.test.js",
+    "test": "node --test --experimental-strip-types test/*.test.js",
     "prepack": "npm run build && npm run bundle"
   },
   "devDependencies": {

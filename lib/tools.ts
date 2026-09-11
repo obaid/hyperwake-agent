@@ -1,5 +1,6 @@
 import { tool } from 'ai';
 import { z } from 'zod';
+import { asModelMedia, type Shot } from './media';
 import { act, createMachine, deleteMachine, desktopUrl, getMachine, listMachines, startMachine, waitForReady } from './engine';
 
 /**
@@ -30,8 +31,28 @@ export const SCREEN = { width: 1280, height: 800 };
  * which looks like a stupid model rather than a units bug.
  */
 export const SENT = { width: 1024, height: 640 };
+
 const scaleUp = (value: number, axis: 'width' | 'height') =>
   Math.round(value * (SCREEN[axis] / SENT[axis]));
+
+/**
+ * Retry a screen action once.
+ *
+ * A machine is `ready` when its guest daemon checks in, which happens before
+ * wayvnc is accepting connections. The first click or key press after boot can
+ * therefore land in the gap and fail, and the engine reports that as a flat
+ * "Automation transport failed." with no detail. One retry turns a confusing
+ * dead end into a short pause.
+ */
+async function screen<T>(run: () => Promise<T>): Promise<T> {
+  try {
+    return await run();
+  } catch (error: any) {
+    if (!/automation|transport|refused|connect/i.test(error?.message ?? '')) throw error;
+    await new Promise((r) => setTimeout(r, 2000));
+    return run();
+  }
+}
 
 async function ensureMachine(session: Session) {
   session.onActivity?.();
@@ -157,22 +178,35 @@ export function buildTools(session: Session) {
       },
     }),
 
-    screenshot: tool({
-      description:
-        `Look at the desktop. The image you get is ${SENT.width}x${SENT.height}; give coordinates in `
-        + 'that space and they are translated for you. Use this to see the result of a '
-        + 'graphical action or to find something to click. You do not need it to check '
-        + 'whether a command worked, because run_command already tells you.',
-      inputSchema: z.object({}),
-      execute: async () => {
-        const id = await ensureMachine(session);
-        const shot = await act(id, { action: 'screenshot' });
-        return {
-          // An AI SDK tool returns an image by describing it as a media part.
-          content: [{ type: 'media', mediaType: shot.mime_type, data: shot.image_base64 }],
-        };
+    /**
+     * `toModelOutput` is attached with Object.assign rather than passed to
+     * tool(), because ai@7.0.97 cannot typecheck the two together: the
+     * contextual parameter is {input: unknown, output: any} and no annotation
+     * satisfies it contravariantly. The runtime contract is unaffected.
+     */
+    screenshot: Object.assign(
+      tool({
+        description:
+          `Look at the desktop. The image you get is ${SENT.width}x${SENT.height}; give coordinates in `
+          + 'that space and they are translated for you. Use this to see the result of a '
+          + 'graphical action or to find something to click. You do not need it to check '
+          + 'whether a command worked, because run_command already tells you.',
+        inputSchema: z.object({}),
+        execute: async (): Promise<Shot> => {
+          const id = await ensureMachine(session);
+          const shot = await screen(() => act(id, { action: 'screenshot' }));
+          return { mediaType: shot.mime_type as string, data: shot.image_base64 as string };
+        },
+      }),
+      {
+        /**
+         * Without this the SDK sends the return value as JSON, so a quarter of
+         * a megabyte of base64 reaches the model as *text*. It cannot see the
+         * picture, it pays for every character, and the run tends to stop dead.
+         */
+        toModelOutput: ({ output }: { output: Shot }) => asModelMedia(output),
       },
-    }),
+    ),
 
     click: tool({
       description: `Click the desktop. Coordinates are in the ${SENT.width}x${SENT.height} space of the screenshot.`,
@@ -183,7 +217,7 @@ export function buildTools(session: Session) {
       }),
       execute: async ({ x, y, button }) => {
         const id = await ensureMachine(session);
-        await act(id, { action: 'click', x: scaleUp(x, 'width'), y: scaleUp(y, 'height'), button: button ?? 1 });
+        await screen(() => act(id, { action: 'click', x: scaleUp(x, 'width'), y: scaleUp(y, 'height'), button: button ?? 1 }));
         return { clicked: { x, y } };
       },
     }),
@@ -193,7 +227,7 @@ export function buildTools(session: Session) {
       inputSchema: z.object({ x: z.number().int(), y: z.number().int() }),
       execute: async ({ x, y }) => {
         const id = await ensureMachine(session);
-        await act(id, { action: 'move', x: scaleUp(x, 'width'), y: scaleUp(y, 'height') });
+        await screen(() => act(id, { action: 'move', x: scaleUp(x, 'width'), y: scaleUp(y, 'height') }));
         return { moved: { x, y } };
       },
     }),
@@ -208,7 +242,7 @@ export function buildTools(session: Session) {
       }),
       execute: async ({ direction, amount }) => {
         const id = await ensureMachine(session);
-        await act(id, { action: 'scroll', direction, amount: amount ?? 3 });
+        await screen(() => act(id, { action: 'scroll', direction, amount: amount ?? 3 }));
         return { scrolled: direction };
       },
     }),
@@ -218,7 +252,7 @@ export function buildTools(session: Session) {
       inputSchema: z.object({ text: z.string() }),
       execute: async ({ text }) => {
         const id = await ensureMachine(session);
-        await act(id, { action: 'type', text });
+        await screen(() => act(id, { action: 'type', text }));
         return { typed: text.length };
       },
     }),
@@ -231,7 +265,7 @@ export function buildTools(session: Session) {
       inputSchema: z.object({ key: z.string() }),
       execute: async ({ key }) => {
         const id = await ensureMachine(session);
-        await act(id, { action: 'key', key });
+        await screen(() => act(id, { action: 'key', key }));
         return { pressed: key };
       },
     }),

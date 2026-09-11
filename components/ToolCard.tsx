@@ -54,7 +54,7 @@ function Output({ name, output }: { name: string; output: any }) {
 
   // The picture the agent looked at.
   if (name === 'screenshot') {
-    const media = output?.content?.find?.((c: any) => c.type === 'media');
+    const media = output?.data ? output : output?.content?.find?.((c: any) => c.type === 'media');
     if (media?.data) {
       return (
         <img
