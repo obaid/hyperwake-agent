@@ -1,0 +1,21 @@
+/* Omarchy's palette, measured from omarchy.org, so the two feel related. */
+:root {
+  --ground: #111c18;
+  --raised: #16231e;
+  --cream: #f7e8b2;
+  --muted: #8fa598;
+  --green: #9ece6a;
+  --red: #f7768e;
+  --line: #24352c;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--ground);
+  color: var(--cream);
+  font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 14px;
+  line-height: 1.6;
+}

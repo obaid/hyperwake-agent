@@ -1,0 +1,44 @@
+{
+  "name": "hyperwake-agent",
+  "version": "0.1.0",
+  "type": "module",
+  "description": "A local chat app whose agent drives a throwaway Omarchy computer.",
+  "homepage": "https://hyperwake.ai",
+  "license": "FSL-1.1-ALv2",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/obaid/hyperwake-agent.git"
+  },
+  "bugs": {
+    "url": "https://github.com/obaid/hyperwake-agent/issues"
+  },
+  "bin": {
+    "hyperwake-agent": "./bin/hyperwake-agent.js"
+  },
+  "files": [
+    "bin",
+    "server",
+    "README.md",
+    "LICENSE.md"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "bundle": "node scripts/bundle.js",
+    "start": "node bin/hyperwake-agent.js",
+    "test": "node --test test/*.test.js",
+    "prepack": "npm run build && npm run bundle"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "next": "16.3.4",
+    "react": "19.3.0",
+    "react-dom": "19.3.0",
+    "typescript": "5.9.3",
+    "@types/node": "22.10.2",
+    "@types/react": "19.0.2"
+  }
+}
