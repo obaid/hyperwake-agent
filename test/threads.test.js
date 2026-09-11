@@ -1,7 +1,7 @@
 import { test, before, after } from 'node:test';
 import assert from 'node:assert/strict';
 import { spawn } from 'node:child_process';
-import { mkdtempSync, rmSync, existsSync, readdirSync } from 'node:fs';
+import { mkdtempSync, rmSync, existsSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -140,5 +140,42 @@ test('the desktop refuses a conversation with no machine', { skip: built ? false
   });
   assert.equal(response.status, 409);
   assert.match(response.body.error, /no machine/i);
+  await json(`/api/threads/${thread.id}`, { method: 'DELETE' });
+});
+
+test('watching a conversation with no machine is harmless', { skip: built ? false : 'build first' }, async () => {
+  const { thread } = (await json('/api/threads', { method: 'POST' })).body;
+  const response = await json('/api/watching', {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({ threadId: thread.id }),
+  });
+  assert.equal(response.status, 200);
+  assert.equal(response.body.status, 'none');
+  await json(`/api/threads/${thread.id}`, { method: 'DELETE' });
+});
+
+test('watching keeps a machine from being reaped as idle', { skip: built ? false : 'build first' }, async () => {
+  // Give the thread a machine and an old activity stamp, as if nobody had
+  // touched it for an hour.
+  const { thread } = (await json('/api/threads', { method: 'POST' })).body;
+  const file = join(home, 'threads', `${thread.id}.json`);
+  const stale = new Date(Date.now() - 60 * 60 * 1000).toISOString();
+  writeFileSync(file, JSON.stringify({
+    ...thread, machineId: 'machine-under-test', machineTouchedAt: stale,
+  }));
+
+  await json('/api/watching', {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({ threadId: thread.id }),
+  });
+
+  const after = JSON.parse(readFileSync(file, 'utf8'));
+  assert.notEqual(after.machineTouchedAt, stale, 'watching should refresh the activity stamp');
+  assert.ok(
+    Date.now() - new Date(after.machineTouchedAt).getTime() < 10_000,
+    'the refreshed stamp should be recent',
+  );
   await json(`/api/threads/${thread.id}`, { method: 'DELETE' });
 });

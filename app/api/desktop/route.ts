@@ -1,5 +1,5 @@
 import { desktopUrl } from '@/lib/engine';
-import { readThread } from '@/lib/threads';
+import { readThread, update } from '@/lib/threads';
 
 export const dynamic = 'force-dynamic';
 
@@ -16,6 +16,10 @@ export async function POST(request: Request) {
   if (!thread?.machineId) {
     return Response.json({ error: 'This conversation has no machine yet.' }, { status: 409 });
   }
+  // Asking to watch counts as using it, or the reaper stops the machine
+  // moments after the panel opens.
+  update(thread.id, { machineTouchedAt: new Date().toISOString() });
+
   try {
     const { desktop_url: url, expires_in: expires } = await desktopUrl(thread.machineId);
     return Response.json({ url, expires });

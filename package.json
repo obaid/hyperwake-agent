@@ -1,6 +1,6 @@
 {
   "name": "hyperwake-agent",
-  "version": "0.2.2",
+  "version": "0.3.0",
   "type": "module",
   "description": "A local chat app whose agent drives a throwaway Omarchy computer.",
   "homepage": "https://hyperwake.ai",
