@@ -5,6 +5,7 @@ import { mkdtempSync, rmSync, existsSync, readdirSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { freePort } from './free-port.js';
 
 /**
  * The test that decides the framework.
@@ -38,7 +39,7 @@ test('the packaged tarball installs, boots and serves every asset', { skip: buil
   const installed = readdirSync(join(scratch, 'node_modules')).filter((n) => !n.startsWith('.'));
   assert.deepEqual(installed, ['hyperwake-agent'], `unexpected runtime deps: ${installed}`);
 
-  const port = 3900 + Math.floor(Math.random() * 90);
+  const port = await freePort();
   const child = spawn(join(scratch, 'node_modules', '.bin', 'hyperwake-agent'), [], {
     cwd: scratch,
     env: { ...process.env, PORT: String(port), HYPERWAKE_AGENT_NO_OPEN: '1' },

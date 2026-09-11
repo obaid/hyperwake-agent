@@ -5,6 +5,7 @@ import { mkdtempSync, rmSync, existsSync, readdirSync, readFileSync, writeFileSy
 import { tmpdir } from 'node:os';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { freePort } from './free-port.js';
 
 /**
  * Conversations, exercised through the HTTP API against the real built server.
@@ -24,7 +25,7 @@ let home;
 before(async () => {
   if (!built) return;
   home = mkdtempSync(join(tmpdir(), 'hyperwake-agent-threads-'));
-  const port = 3800 + Math.floor(Math.random() * 90);
+  const port = await freePort();
   base = `http://127.0.0.1:${port}`;
 
   child = spawn(process.execPath, [join(root, 'server', 'server.js')], {
