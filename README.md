@@ -13,8 +13,8 @@ npx hyperwake-agent    # this
 
 It opens a browser. Pick a model provider, then talk to it.
 
-> **Status: M0.** The packaging works and the app reaches the engine. The chat
-> and the agent itself are next. See
+> **Status: M1.** Setup, the agent, the tools and the desktop panel are built.
+> Threads and persistence are next. See
 > [ADR-AGENT-001](https://github.com/obaid/hyperwake-core/blob/main/docs/decisions/ADR-AGENT-001-hyperwake-agent.md)
 > for the design.
 
