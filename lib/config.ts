@@ -24,7 +24,7 @@ export type Config = {
 };
 
 export function configDir() {
-  const dir = process.env.HYPERWAKE_AGENT_HOME || join(homedir(), '.hyperwake-agent');
+  const dir = process.env.MOLA_AGENT_HOME || join(homedir(), '.mola-agent');
   mkdirSync(dir, { recursive: true, mode: 0o700 });
   return dir;
 }

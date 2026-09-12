@@ -47,8 +47,8 @@ export default function Threads({
   return (
     <nav className="threads">
       <header className="brand">
-        <a href="https://hyperwake.ai" target="_blank" rel="noreferrer" title="hyperwake.ai">
-          hyperwake<span className="dot">.</span>
+        <a href="https://mola.sh" target="_blank" rel="noreferrer" title="mola.sh">
+          mola<span className="dot">.</span>
         </a>
         <span className="kind">agent</span>
       </header>

@@ -3,7 +3,7 @@ import { homedir } from 'node:os';
 import { join } from 'node:path';
 
 /**
- * Reaching the Hyperwake engine.
+ * Reaching the Mola engine.
  *
  * This runs only on the server. The engine sends no CORS headers, so a browser
  * could not call it even if we wanted that, and the operator token has no
@@ -11,7 +11,7 @@ import { join } from 'node:path';
  */
 
 export function stateDir() {
-  return process.env.HYPERWAKE_HOME || join(homedir(), '.hyperwake');
+  return process.env.MOLA_HOME || join(homedir(), '.mola');
 }
 
 /** Read the operator token without creating one; its absence is information. */
@@ -21,8 +21,8 @@ export function operatorToken(): string | null {
 }
 
 export function engineBase() {
-  return process.env.HYPERWAKE_API
-    || `http://127.0.0.1:${process.env.HYPERWAKE_PORT || 4141}`;
+  return process.env.MOLA_API
+    || `http://127.0.0.1:${process.env.MOLA_PORT || 4141}`;
 }
 
 export type EngineStatus = {
@@ -42,7 +42,7 @@ export async function engineStatus(): Promise<EngineStatus> {
   if (!token) {
     return {
       ok: false,
-      detail: `No token at ${join(stateDir(), 'token')}. Start the engine with: npx hyperwake`,
+      detail: `No token at ${join(stateDir(), 'token')}. Start the engine with: npx mola-core`,
     };
   }
 
@@ -54,7 +54,7 @@ export async function engineStatus(): Promise<EngineStatus> {
     });
 
     if (response.status === 401) {
-      return { ok: false, detail: 'The engine rejected this token. Restart it, or check HYPERWAKE_HOME.' };
+      return { ok: false, detail: 'The engine rejected this token. Restart it, or check MOLA_HOME.' };
     }
     if (!response.ok) {
       return { ok: false, detail: `The engine answered ${response.status}.` };
@@ -68,7 +68,7 @@ export async function engineStatus(): Promise<EngineStatus> {
       host,
     };
   } catch {
-    return { ok: false, detail: `Nothing answering at ${engineBase()}. Start it with: npx hyperwake` };
+    return { ok: false, detail: `Nothing answering at ${engineBase()}. Start it with: npx mola-core` };
   }
 }
 
@@ -80,7 +80,7 @@ class EngineError extends Error {
 
 async function call(method: string, path: string, body?: unknown, timeoutMs = 180_000) {
   const token = operatorToken();
-  if (!token) throw new EngineError(0, 'The Hyperwake engine is not running. Start it with: npx hyperwake');
+  if (!token) throw new EngineError(0, 'The Mola engine is not running. Start it with: npx mola-core');
 
   let response: Response;
   try {
@@ -96,7 +96,7 @@ async function call(method: string, path: string, body?: unknown, timeoutMs = 18
     });
   } catch (error: any) {
     if (error?.name === 'TimeoutError') throw new EngineError(504, `The engine did not answer within ${timeoutMs / 1000}s.`);
-    throw new EngineError(0, `No engine at ${engineBase()}. Start it with: npx hyperwake`);
+    throw new EngineError(0, `No engine at ${engineBase()}. Start it with: npx mola-core`);
   }
 
   const text = await response.text();

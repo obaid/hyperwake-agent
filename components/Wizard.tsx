@@ -53,7 +53,7 @@ export default function Wizard({
 
   return (
     <main className="wizard">
-      <h1>hyperwake<span className="dot">.</span>agent</h1>
+      <h1>mola<span className="dot">.</span>agent</h1>
       <p className="muted">An agent with a real computer. Two things to set up.</p>
 
       <section className={`step ${engine.ok ? 'ok' : 'bad'}`}>
@@ -99,7 +99,7 @@ export default function Wizard({
               {busy ? 'checking…' : 'Continue'}
             </button>
             <p className="muted small">
-              Stored at <code>~/.hyperwake-agent/config.json</code>, mode 0600. It stays on this
+              Stored at <code>~/.mola-agent/config.json</code>, mode 0600. It stays on this
               machine and never reaches the browser again.{' '}
               <a href={PROVIDERS.find((p) => p.id === provider)!.url} target="_blank" rel="noreferrer">
                 Get a key

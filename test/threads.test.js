@@ -24,7 +24,7 @@ let home;
 
 before(async () => {
   if (!built) return;
-  home = mkdtempSync(join(tmpdir(), 'hyperwake-agent-threads-'));
+  home = mkdtempSync(join(tmpdir(), 'mola-agent-threads-'));
   const port = await freePort();
   base = `http://127.0.0.1:${port}`;
 
@@ -34,10 +34,10 @@ before(async () => {
       ...process.env,
       PORT: String(port),
       HOSTNAME: '127.0.0.1',
-      HYPERWAKE_AGENT_HOME: home,
+      MOLA_AGENT_HOME: home,
       // Point at a port nothing is on, so the engine is definitively absent and
       // these tests never touch a real machine.
-      HYPERWAKE_PORT: '4999',
+      MOLA_PORT: '4999',
     },
     stdio: 'ignore',
   });
@@ -129,7 +129,7 @@ test('chat refuses a cross-origin caller', { skip: built ? false : 'build first'
 test('the machines view degrades honestly when the engine is absent', { skip: built ? false : 'build first' }, async () => {
   const response = await json('/api/machines');
   assert.equal(response.status, 502);
-  assert.match(response.body.error, /engine|npx hyperwake/i);
+  assert.match(response.body.error, /engine|npx mola-core/i);
 });
 
 test('the desktop refuses a conversation with no machine', { skip: built ? false : 'build first' }, async () => {

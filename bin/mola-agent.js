@@ -65,7 +65,7 @@ const child = spawn(process.execPath, [server], {
 });
 
 console.log(`
-${bold('  Hyperwake Agent')} ${dim('· an agent that uses a real computer')}
+${bold('  Mola Agent')} ${dim('· an agent that uses a real computer')}
 
   ${bold('Open')}  ${green(url)}
 ${port !== requested ? dim(`  (${requested} was taken)\n`) : ''}
@@ -82,7 +82,7 @@ const opener = process.platform === 'darwin' ? 'open'
     try {
       const response = await fetch(`${url}/api/health`, { signal: AbortSignal.timeout(1000) });
       if (response.ok) {
-        if (!process.env.HYPERWAKE_AGENT_NO_OPEN) {
+        if (!process.env.MOLA_AGENT_NO_OPEN) {
           spawn(opener, [url], { stdio: 'ignore', detached: true }).unref();
         }
         return;

@@ -1,4 +1,4 @@
-# hyperwake-agent
+# mola-agent
 
 **Watch an agent use a real computer.**
 
@@ -7,8 +7,8 @@ and an agent creates a throwaway [Omarchy](https://omarchy.org) desktop, works o
 it, and shows you the screen while it does. Take the mouse whenever you want.
 
 ```sh
-npx hyperwake          # the engine
-npx hyperwake-agent    # this
+npx mola-core          # the engine
+npx mola-agent         # this
 ```
 
 It opens a browser, asks which model you want to use, and then you talk to it.
@@ -30,8 +30,8 @@ Your mouse and keyboard work there, so you can take over mid-task and hand back.
 
 ## What you need
 
-Node 20 or newer, the Hyperwake engine running, and an API key for Anthropic,
-OpenAI or OpenRouter. The key is stored at `~/.hyperwake-agent/config.json` with
+Node 20 or newer, the Mola engine running, and an API key for Anthropic,
+OpenAI or OpenRouter. The key is stored at `~/.mola-agent/config.json` with
 mode 0600 and never reaches the browser.
 
 The setup step checks the engine for you rather than asking you to paste a token
@@ -43,7 +43,7 @@ If you have Claude Code, Claude Desktop or Cursor, you may not need this app at
 all. The engine ships an MCP server:
 
 ```sh
-claude mcp add hyperwake -- npx -y hyperwake mcp
+claude mcp add mola -- npx -y mola-core mcp
 ```
 
 This app exists for the thing MCP cannot do: showing you the desktop beside the
@@ -91,4 +91,4 @@ every stylesheet 404s.
 ## Licence
 
 [FSL-1.1-ALv2](LICENSE.md). Use it for anything except building something that
-competes with Hyperwake. Each release becomes Apache 2.0 two years after it ships.
+competes with Mola. Each release becomes Apache 2.0 two years after it ships.

@@ -2,7 +2,7 @@ import type { ReactNode } from 'react';
 import './globals.css';
 
 export const metadata = {
-  title: 'Hyperwake Agent',
+  title: 'Mola Agent',
   description: 'A chat app whose agent drives a throwaway Omarchy computer.',
 };
 

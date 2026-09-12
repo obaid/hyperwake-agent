@@ -1,19 +1,19 @@
 {
-  "name": "hyperwake-agent",
+  "name": "mola-agent",
   "version": "0.6.1",
   "type": "module",
   "description": "A local chat app whose agent drives a throwaway Omarchy computer.",
-  "homepage": "https://hyperwake.ai",
+  "homepage": "https://mola.sh",
   "license": "FSL-1.1-ALv2",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/obaid/hyperwake-agent.git"
+    "url": "git+https://github.com/obaid/mola-agent.git"
   },
   "bugs": {
-    "url": "https://github.com/obaid/hyperwake-agent/issues"
+    "url": "https://github.com/obaid/mola-agent/issues"
   },
   "bin": {
-    "hyperwake-agent": "./bin/hyperwake-agent.js"
+    "mola-agent": "./bin/mola-agent.js"
   },
   "files": [
     "bin",
@@ -28,7 +28,7 @@
     "dev": "next dev",
     "build": "next build",
     "bundle": "node scripts/bundle.js",
-    "start": "node bin/hyperwake-agent.js",
+    "start": "node bin/mola-agent.js",
     "test": "node --test --experimental-strip-types test/*.test.js",
     "prepack": "npm run build && npm run bundle"
   },

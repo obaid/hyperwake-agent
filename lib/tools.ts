@@ -129,7 +129,7 @@ export function buildTools(session: Session) {
       execute: async ({ command }) => {
         const id = await ensureMachine(session);
         const handle = `${Date.now().toString(36)}${Math.random().toString(36).slice(2, 6)}`;
-        const log = `/tmp/hyperwake-task-${handle}.log`;
+        const log = `/tmp/mola-task-${handle}.log`;
         // setsid detaches it from the SSH session, so it survives this call
         // returning. Without it the command dies the moment we disconnect.
         const quoted = `'${command.replaceAll("'", `'\\''`)}'`;
@@ -147,7 +147,7 @@ export function buildTools(session: Session) {
       inputSchema: z.object({ handle: z.string(), lines: z.number().int().min(1).max(300).optional() }),
       execute: async ({ handle, lines }) => {
         const id = await ensureMachine(session);
-        const log = `/tmp/hyperwake-task-${handle}.log`;
+        const log = `/tmp/mola-task-${handle}.log`;
         const result = await act(id, {
           action: 'exec',
           timeout: 30,

@@ -24,7 +24,7 @@ const root = dirname(dirname(fileURLToPath(import.meta.url)));
 const built = existsSync(join(root, 'server', 'server.js'));
 
 test('the packaged tarball installs, boots and serves every asset', { skip: built ? false : 'run `npm run build && npm run bundle` first', timeout: 300_000 }, async (t) => {
-  const scratch = mkdtempSync(join(tmpdir(), 'hyperwake-agent-pack-'));
+  const scratch = mkdtempSync(join(tmpdir(), 'mola-agent-pack-'));
   t.after(() => rmSync(scratch, { recursive: true, force: true }));
 
   const tarball = execFileSync('npm', ['pack', '--silent', '--pack-destination', scratch], {
@@ -37,12 +37,12 @@ test('the packaged tarball installs, boots and serves every asset', { skip: buil
   // Nothing but our own package: standalone bundles what it needs, so the
   // published package declares no runtime dependencies.
   const installed = readdirSync(join(scratch, 'node_modules')).filter((n) => !n.startsWith('.'));
-  assert.deepEqual(installed, ['hyperwake-agent'], `unexpected runtime deps: ${installed}`);
+  assert.deepEqual(installed, ['mola-agent'], `unexpected runtime deps: ${installed}`);
 
   const port = await freePort();
-  const child = spawn(join(scratch, 'node_modules', '.bin', 'hyperwake-agent'), [], {
+  const child = spawn(join(scratch, 'node_modules', '.bin', 'mola-agent'), [], {
     cwd: scratch,
-    env: { ...process.env, PORT: String(port), HYPERWAKE_AGENT_NO_OPEN: '1' },
+    env: { ...process.env, PORT: String(port), MOLA_AGENT_NO_OPEN: '1' },
     stdio: 'ignore',
   });
   t.after(() => child.kill('SIGKILL'));
@@ -60,11 +60,11 @@ test('the packaged tarball installs, boots and serves every asset', { skip: buil
   assert.ok(up, 'the packaged server never answered /api/health');
 
   const health = await (await fetch(`${base}/api/health`)).json();
-  assert.equal(health.service, 'hyperwake-agent');
+  assert.equal(health.service, 'mola-agent');
   assert.ok('engine' in health, 'health should report on the engine, reachable or not');
 
   const html = await (await fetch(base)).text();
-  assert.match(html, /<title>Hyperwake Agent<\/title>/);
+  assert.match(html, /<title>Mola Agent<\/title>/);
 
   // The standalone bug this bundler exists to prevent.
   const assets = [...html.matchAll(/(?:href|src)="(\/_next\/[^"]+)"/g)].map((m) => m[1]);
