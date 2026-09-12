@@ -1,6 +1,6 @@
 {
   "name": "mola-agent",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "type": "module",
   "description": "A local chat app whose agent drives a throwaway Omarchy computer.",
   "homepage": "https://mola.sh",
